@@ -262,6 +262,7 @@ def admin():
     conn = get_db()
     c = conn.cursor()
 
+    # ---------------- HANDLE FORM ACTIONS ----------------
     if request.method == "POST":
         action = request.form.get("action")
 
@@ -316,7 +317,7 @@ def admin():
         conn.close()
         return redirect(url_for("admin"))
 
-    # FETCH INTENTS
+    # ---------------- FETCH INTENTS ----------------
     c.execute("""
         SELECT i.id, i.tag,
                GROUP_CONCAT(p.pattern, '\n'),
@@ -327,10 +328,33 @@ def admin():
         GROUP BY i.id
     """)
     intents = c.fetchall()
+
+    # ---------------- ANALYTICS ----------------
+    c.execute("SELECT COUNT(*) FROM intents")
+    total_intents = c.fetchone()[0]
+
+    c.execute("SELECT COUNT(*) FROM patterns")
+    total_patterns = c.fetchone()[0]
+
+    c.execute("SELECT COUNT(*) FROM responses")
+    total_responses = c.fetchone()[0]
+
+    c.execute("SELECT COUNT(*) FROM chats")
+    total_chats = c.fetchone()[0]
+
     conn.close()
 
-    return render_template("admin.html", intents=intents)
+    return render_template(
+        "admin.html",
+        intents=intents,
+        total_intents=total_intents,
+        total_patterns=total_patterns,
+        total_responses=total_responses,
+        total_chats=total_chats
+    )
+
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run()
+
