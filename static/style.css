@@ -266,62 +266,63 @@ body.light .menu-btn {
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
 }
 
-/*for mobile */
-@media (max-width: 900px) {
-    .sidebar {
-        width: 200px;
-    }
-    .message {
-        max-width: 70%;
-    }
-}
-
+/* Force mobile layout */
 @media (max-width: 768px) {
 
-    .menu-btn {
-        display: block;
+    /* Make app stack vertically */
+    .app-container {
+        flex-direction: column;
     }
 
+    /* Sidebar becomes hidden drawer */
     .sidebar {
         position: fixed;
         top: 0;
-        left: -260px;
+        left: -100%;
+        width: 240px;
         height: 100%;
-        z-index: 999;
-        transition: 0.3s;
+        z-index: 1000;
+        transition: 0.3s ease;
     }
 
     .sidebar.show {
         left: 0;
     }
 
+    /* Chat takes full screen width */
     .chat-container {
-        width: 100%;
+        width: 100% !important;
+        margin-left: 0 !important;
     }
 
+    /* Show hamburger menu */
+    .menu-btn {
+        display: block;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1100;
+    }
+
+    /* Fix header spacing */
     .chat-header {
+        padding-left: 50px; /* space for menu button */
         flex-wrap: wrap;
         gap: 6px;
     }
 
-    .chat-header span {
-        font-size: 14px;
-    }
-
-    .admin-btn,
-    #themeToggle {
-        font-size: 12px;
-        padding: 4px 8px;
-    }
-
+    /* Chat messages fit screen */
     .message {
-        max-width: 85%;
-        font-size: 13px;
+        max-width: 85% !important;
+    }
+
+    /* Input bar responsive */
+    .chat-input {
+        gap: 6px;
     }
 
     .chat-input input {
         font-size: 13px;
-        padding: 8px;
     }
 
     .chat-input button {
@@ -329,23 +330,25 @@ body.light .menu-btn {
     }
 }
 
+/* Extra small phones */
 @media (max-width: 480px) {
-    .sidebar {
-        width: 220px;
+
+    .message {
+        max-width: 90% !important;
+        font-size: 13px;
     }
 
     .chat-header span {
         font-size: 13px;
     }
 
-    .message {
-        max-width: 90%;
-    }
-
-    .chat-input input {
-        font-size: 12px;
+    .admin-btn,
+    #themeToggle {
+        font-size: 11px;
+        padding: 4px 6px;
     }
 }
+
 
 
 
