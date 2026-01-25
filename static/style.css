@@ -163,6 +163,37 @@ body.light .chat-input {
     color: white;
 }
 
+/* Admin Button - Industry Style */
+.admin-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #2563eb;
+    background: transparent;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.admin-btn:hover {
+    background: #2563eb;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Light Mode Admin Button */
+body.light .admin-btn {
+    border: 1px solid #1d4ed8;
+    color: #1d4ed8;
+}
+
+body.light .admin-btn:hover {
+    background: #1d4ed8;
+    color: white;
+}
+
+
 /* Responsive (Mobile) */
 @media (max-width: 768px) {
     .sidebar {
@@ -172,3 +203,4 @@ body.light .chat-input {
         max-width: 80%;
     }
 }
+
