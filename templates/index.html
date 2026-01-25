@@ -1,50 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Helpdesk Chatbot</title>
-    <link rel="stylesheet" href="/static/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Chatbot</title>
+<link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<div class="app-container">
+<button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
-    <!-- Mobile Menu Button -->
-    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+<div class="app">
 
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <h2>🎓 College ChatBot</h2>
-        <p>AI Helpdesk System</p>
-        <hr>
-        <ul>
-            <li>📌 Admission Info</li>
-            <li>💰 Fees Details</li>
-            <li>📅 Timetable</li>
-            <li>📞 Contact Support</li>
-        </ul>
+<div class="sidebar" id="sidebar">
+    <h2>🎓 College Chatbot</h2>
+    <p>AI Helpdesk System</p>
+    <ul>
+        <li>📌 Admissions</li>
+        <li>💰 Fees</li>
+        <li>📅 Timetable</li>
+        <li>📞 Contact</li>
+    </ul>
+</div>
+
+<div class="chat">
+
+<div class="chat-header">
+    <span>College Helpdesk AI 🤖</span>
+    <div class="header-actions">
+        <button class="btn" onclick="location.href='/admin'">Admin</button>
+        <button class="btn" id="themeToggle">🌙</button>
     </div>
+</div>
 
-    <!-- Chat Section -->
-    <div class="chat-container">
+<div id="chat" class="chat-box"></div>
 
-        <div class="chat-header">
-            <span>College Helpdesk Chatbot</span>
-            <button onclick="window.location.href='/admin'" class="admin-btn">Admin Panel</button>
-            <button id="themeToggle">🌙</button>
-        </div>
+<div class="chat-input">
+    <input type="text" id="msg" placeholder="Type your question...">
+    <button onclick="send()">➤</button>
+</div>
 
-        <div id="chat" class="chat-box"></div>
-
-        <div class="chat-input">
-            <input type="text" id="msg" placeholder="Ask your question..." autofocus>
-            <button onclick="send()">➤</button>
-            <button onclick="window.speechSynthesis.cancel()">🔇</button>
-        </div>
-
-    </div>
-
+</div>
 </div>
 
 <script>
@@ -52,64 +47,32 @@ function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("show");
 }
 
-function speak(text) {
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = "en-US";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(speech);
-}
-
 function send() {
     let input = document.getElementById("msg");
     let message = input.value.trim();
-    if (message === "") return;
+    if (!message) return;
 
     addMessage("user", message);
 
     fetch("/chat", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({message: message})
+        body: JSON.stringify({message})
     })
     .then(res => res.json())
-    .then(data => {
-        addMessage("bot", data.reply);
-        speak(data.reply);
-    });
+    .then(data => addMessage("bot", data.reply));
 
     input.value = "";
 }
 
-function addMessage(sender, text) {
+function addMessage(type, text) {
     let chat = document.getElementById("chat");
     let div = document.createElement("div");
-    div.className = "message " + sender;
+    div.className = "msg " + type;
     div.innerText = text;
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
 }
-
-document.getElementById("msg").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-        e.preventDefault();
-        send();
-    }
-});
-
-const toggleBtn = document.getElementById("themeToggle");
-const body = document.body;
-
-if (localStorage.getItem("theme") === "light") {
-    body.classList.add("light");
-    toggleBtn.textContent = "☀️";
-}
-
-toggleBtn.onclick = () => {
-    body.classList.toggle("light");
-    const isLight = body.classList.contains("light");
-    toggleBtn.textContent = isLight ? "☀️" : "🌙";
-    localStorage.setItem("theme", isLight ? "light" : "dark");
-};
 </script>
 
 </body>
