@@ -10,6 +10,10 @@ body {
     overflow: hidden;
 }
 
+html,body{
+    height:100%;
+}
+
 /* Layout */
 .app-container {
     display: flex;
@@ -269,18 +273,21 @@ body.light .menu-btn {
 /* Force mobile layout */
 @media (max-width: 768px) {
 
-    /* Make app stack vertically */
+    /* App container must fill screen */
     .app-container {
+        display: flex;
         flex-direction: column;
+        height: 100vh;
+        width: 100%;
     }
 
-    /* Sidebar becomes hidden drawer */
+    /* Sidebar overlay */
     .sidebar {
         position: fixed;
         top: 0;
         left: -100%;
         width: 240px;
-        height: 100%;
+        height: 100vh;
         z-index: 1000;
         transition: 0.3s ease;
     }
@@ -289,13 +296,29 @@ body.light .menu-btn {
         left: 0;
     }
 
-    /* Chat takes full screen width */
+    /* Chat container must be visible */
     .chat-container {
-        width: 100% !important;
-        margin-left: 0 !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100vh;
     }
 
-    /* Show hamburger menu */
+    /* Chat box must expand */
+    .chat-box {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    /* Input bar fixed at bottom */
+    .chat-input {
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+    }
+
+    /* Show menu button */
     .menu-btn {
         display: block;
         position: fixed;
@@ -304,32 +327,11 @@ body.light .menu-btn {
         z-index: 1100;
     }
 
-    /* Fix header spacing */
+    /* Header spacing */
     .chat-header {
-        padding-left: 50px; /* space for menu button */
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    /* Chat messages fit screen */
-    .message {
-        max-width: 85% !important;
-    }
-
-    /* Input bar responsive */
-    .chat-input {
-        gap: 6px;
-    }
-
-    .chat-input input {
-        font-size: 13px;
-    }
-
-    .chat-input button {
-        padding: 6px 10px;
+        padding-left: 50px;
     }
 }
-
 /* Extra small phones */
 @media (max-width: 480px) {
 
@@ -348,6 +350,7 @@ body.light .menu-btn {
         padding: 4px 6px;
     }
 }
+
 
 
 
