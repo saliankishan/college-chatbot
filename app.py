@@ -1,33 +1,26 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import sqlite3
-import random
 import nltk
 import string
 from nltk.tokenize import word_tokenize
-from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from werkzeug.security import generate_password_hash, check_password_hash
-from time import time
-
-login_attempts = {}
 
 nltk.download("punkt")
 
 app = Flask(__name__)
-app.secret_key = "X9@kL#2026!AI$Chatbot"
+app.secret_key = "college_chatbot_secret"
 
-stemmer = PorterStemmer()
-
-# ---------------- DATABASE ----------------
+# ---------------- DATABASE CONNECTION ----------------
 def get_db():
     return sqlite3.connect("database.db")
 
+# ---------------- CREATE TABLES ----------------
 def init_db():
     conn = get_db()
     c = conn.cursor()
 
-    # Admins
     c.execute("""
         CREATE TABLE IF NOT EXISTS admins (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,7 +29,6 @@ def init_db():
         )
     """)
 
-    # Intents
     c.execute("""
         CREATE TABLE IF NOT EXISTS intents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,7 +36,6 @@ def init_db():
         )
     """)
 
-    # Patterns
     c.execute("""
         CREATE TABLE IF NOT EXISTS patterns (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,7 +44,6 @@ def init_db():
         )
     """)
 
-    # Responses
     c.execute("""
         CREATE TABLE IF NOT EXISTS responses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,16 +52,6 @@ def init_db():
         )
     """)
 
-    # College info
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS college_info (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            field TEXT UNIQUE,
-            value TEXT
-        )
-    """)
-
-    # Chats
     c.execute("""
         CREATE TABLE IF NOT EXISTS chats (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,52 +61,78 @@ def init_db():
         )
     """)
 
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS complaints (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            message TEXT,
+            type TEXT,
+            status TEXT DEFAULT 'Pending',
+            time DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS college_info (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            field TEXT UNIQUE,
+            value TEXT
+        )
+    """)
+
     conn.commit()
     conn.close()
 
-init_db()
-
-# ---------------- SEED ADMIN (RUN ONCE) ----------------
-'''def seed_admin():
+# ---------------- AUTO SEED DATA ----------------
+def seed_data():
     conn = get_db()
     c = conn.cursor()
 
-    username = "admin"
-    password = "chatbot@777"
-    password_hash = generate_password_hash(password)
+    # Seed Admin
+    c.execute("SELECT * FROM admins WHERE username='admin'")
+    if not c.fetchone():
+        password_hash = generate_password_hash("chatbot@777")
+        c.execute("INSERT INTO admins (username, password) VALUES (?, ?)",
+                  ("admin", password_hash))
 
-    # DELETE old admin (force update)
-    c.execute("DELETE FROM admins WHERE username=?", (username,))
-
-    # INSERT fresh admin
-    c.execute("INSERT INTO admins (username, password) VALUES (?, ?)",
-              (username, password_hash))
-
-    conn.commit()
-    conn.close()
-    print("✅ Admin reset successfully!")
-  
-seed_admin()  '''
-
-# ---------------- SEED COLLEGE INFO ----------------
-def seed_college_info():
-    data = {
+    # Seed College Info
+    college_data = {
         "name": "Vijaya College, Mulki",
         "address": "Mulki, Karnataka",
         "phone": "9876543210",
         "courses": "BCA, BCom, BSc",
         "office_time": "9:30 AM to 4:30 PM"
     }
-    conn = get_db()
-    c = conn.cursor()
-    for k, v in data.items():
+
+    for k, v in college_data.items():
         c.execute("INSERT OR IGNORE INTO college_info (field, value) VALUES (?, ?)", (k, v))
+
+    # Seed Default Intent
+    c.execute("SELECT COUNT(*) FROM intents")
+    if c.fetchone()[0] == 0:
+        c.execute("INSERT INTO intents (tag) VALUES (?)", ("greeting",))
+        intent_id = c.lastrowid
+
+        patterns = ["hi", "hello", "hey", "good morning"]
+        responses = [
+            "Hello! How can I help you?",
+            "Hi 😊 Ask me anything about the college.",
+            "Welcome to the college chatbot!"
+        ]
+
+        for p in patterns:
+            c.execute("INSERT INTO patterns (intent_id, pattern) VALUES (?, ?)", (intent_id, p))
+
+        for r in responses:
+            c.execute("INSERT INTO responses (intent_id, response) VALUES (?, ?)", (intent_id, r))
+
     conn.commit()
     conn.close()
 
-seed_college_info()
+init_db()
+seed_data()
 
-# ---------------- NLP PREPROCESS ----------------
+# ---------------- NLP PROCESS ----------------
 def preprocess(text):
     text = text.lower()
     text = text.translate(str.maketrans("", "", string.punctuation))
@@ -173,11 +179,10 @@ def smart_match(user_message):
 
     return None, confidence
 
-# ---------------- CHATBOT ----------------
+# ---------------- CHATBOT RESPONSE ----------------
 def get_response(message):
     text = message.lower()
 
-    # Direct college info
     if "college name" in text:
         return get_college_info("name")
     if "address" in text:
@@ -194,7 +199,7 @@ def get_response(message):
     if reply:
         return reply
 
-    return "Sorry, I’m not sure about that. Can you rephrase your question?"
+    return "Sorry, I'm not sure about that. Can you rephrase your question?"
 
 # ---------------- ROUTES ----------------
 @app.route("/")
@@ -206,39 +211,25 @@ def chat():
     data = request.get_json()
     msg = data.get("message", "").strip()
 
-    # 1️ Validate message length
     if not msg:
         return jsonify({"reply": "Please type a message."})
 
-    if len(msg) > 100:
+    if len(msg) > 200:
         return jsonify({"reply": "Message too long."})
 
-    # 2️ Get chatbot reply
     reply = get_response(msg)
 
-    # 3️ Safe database insert (SQL Injection safe ✅)
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        c.execute("INSERT INTO chats (user, bot) VALUES (?, ?)", (msg, reply))
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        print("DB Error:", e)
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("INSERT INTO chats (user, bot) VALUES (?, ?)", (msg, reply))
+    conn.commit()
+    conn.close()
 
     return jsonify({"reply": reply})
-
 
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    ip = request.remote_addr
-    now = time()
-
-    # limit attempts
-    if ip in login_attempts and login_attempts[ip]["count"] >= 5 and now - login_attempts[ip]["time"] < 300:
-        return "❌ Too many attempts. Try again after 5 minutes." #to prevent brute force hacking
-
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -251,17 +242,11 @@ def login():
 
         if row and check_password_hash(row[0], password):
             session["admin_logged_in"] = True
-            login_attempts[ip] = {"count": 0, "time": now}
             return redirect(url_for("admin"))
         else:
-            if ip not in login_attempts:
-                login_attempts[ip] = {"count": 0, "time": now}
-            login_attempts[ip]["count"] += 1
-            login_attempts[ip]["time"] = now
             return render_template("login.html", error="Invalid username or password")
 
     return render_template("login.html")
-
 
 @app.route("/logout")
 def logout():
@@ -294,11 +279,6 @@ def admin():
             patterns = request.form["patterns"].split("\n")
             responses = request.form["responses"].split("\n")
 
-            c.execute("SELECT id FROM intents WHERE tag=?", (tag,))
-            if c.fetchone():
-                conn.close()
-                return redirect(url_for("admin", error="Intent already exists"))
-
             c.execute("INSERT INTO intents (tag) VALUES (?)", (tag,))
             intent_id = c.lastrowid
 
@@ -319,19 +299,14 @@ def admin():
             patterns = request.form["patterns"].split("\n")
             responses = request.form["responses"].split("\n")
 
-            # Update tag
             c.execute("UPDATE intents SET tag=? WHERE id=?", (tag, intent_id))
-
-            # Delete old patterns & responses
             c.execute("DELETE FROM patterns WHERE intent_id=?", (intent_id,))
             c.execute("DELETE FROM responses WHERE intent_id=?", (intent_id,))
 
-            # Insert updated patterns
             for p in patterns:
                 if p.strip():
                     c.execute("INSERT INTO patterns (intent_id, pattern) VALUES (?, ?)", (intent_id, p.strip()))
 
-            # Insert updated responses
             for r in responses:
                 if r.strip():
                     c.execute("INSERT INTO responses (intent_id, response) VALUES (?, ?)", (intent_id, r.strip()))
@@ -352,32 +327,10 @@ def admin():
         GROUP BY i.id
     """)
     intents = c.fetchall()
-
-    # REAL ANALYTICS
-    c.execute("SELECT COUNT(*) FROM intents")
-    total_intents = c.fetchone()[0]
-
-    c.execute("SELECT COUNT(*) FROM patterns")
-    total_patterns = c.fetchone()[0]
-
-    c.execute("SELECT COUNT(*) FROM responses")
-    total_responses = c.fetchone()[0]
-
-    c.execute("SELECT COUNT(*) FROM chats")
-    total_chats = c.fetchone()[0]
-
     conn.close()
 
-    error = request.args.get("error")
-    return render_template(
-        "admin.html",
-        intents=intents,
-        error=error,
-        total_intents=total_intents,
-        total_patterns=total_patterns,
-        total_responses=total_responses,
-        total_chats=total_chats
-    )
+    return render_template("admin.html", intents=intents)
 
+# ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run()
