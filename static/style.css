@@ -7,7 +7,7 @@ body {
     margin: 0;
     background: radial-gradient(circle at top left, #0f172a, #020617);
     color: white;
-    overflow: hidden;
+    overflow: auto;
 }
 
 /* Layout */
@@ -15,6 +15,7 @@ body {
     display: flex;
     height: 100vh;
     position: relative;
+    overflow: hidden;
 }
 
 /* Mobile Menu Button */
@@ -79,6 +80,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    height: 100vh;
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(10px);
 }
@@ -105,6 +107,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-height: 0;
 }
 
 /* Messages - Neon Glass Bubbles */
@@ -144,6 +147,8 @@ body {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(12px);
     border-top: 1px solid rgba(255,255,255,0.15);
+    position: sticky;
+    bottom: 0;
 }
 
 /* Input Box */
@@ -319,4 +324,5 @@ body.light .menu-btn {
     transform: scale(1.05);
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
 }
+
 
