@@ -3,3 +3,4 @@ nltk
 scikit-learn
 werkzeug
 gunicorn
+psycopg2-binary
