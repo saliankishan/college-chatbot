@@ -248,6 +248,7 @@ body.light .menu-btn {
     background: rgba(37, 99, 235, 0.7);
 }
 
+/*admin button*/
 .admin-btn {
     background: linear-gradient(135deg, #2563eb, #7c3aed);
     border: none;
@@ -265,6 +266,7 @@ body.light .menu-btn {
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
 }
 
+/*for mobile */
 @media (max-width: 900px) {
     .sidebar {
         width: 200px;
@@ -344,5 +346,6 @@ body.light .menu-btn {
         font-size: 12px;
     }
 }
+
 
 
