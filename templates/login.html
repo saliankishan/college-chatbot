@@ -13,74 +13,48 @@
     font-family: "Segoe UI", sans-serif;
 }
 
-/* Animated Gradient Background */
 body {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #020617, #020617, #1e3a8a, #020617);
-    background-size: 300% 300%;
-    animation: bgMove 10s ease infinite;
+    background: radial-gradient(circle at top, #1e3a8a, #020617 70%);
     color: white;
 }
 
-@keyframes bgMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* Glass Card */
-.login-card {
+/* Glass Login Box */
+.login-box {
     width: 380px;
     padding: 35px;
-    border-radius: 20px;
+    border-radius: 18px;
     background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 40px rgba(37, 99, 235, 0.4);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Neon Border Glow */
-.login-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 20px;
-    padding: 2px;
-    background: linear-gradient(120deg, #2563eb, #22c55e, #2563eb);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
 }
 
 /* Title */
-.login-title {
+.login-box h2 {
     text-align: center;
+    margin-bottom: 6px;
     font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 8px;
 }
 
-.login-subtitle {
+.login-box p {
     text-align: center;
     font-size: 13px;
     opacity: 0.7;
     margin-bottom: 25px;
 }
 
-/* Input Group */
+/* Inputs */
 .input-group {
-    position: relative;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
 }
 
 .input-group input {
     width: 100%;
-    padding: 14px 12px;
+    padding: 12px;
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.2);
     background: rgba(255,255,255,0.05);
@@ -92,47 +66,10 @@ body {
 
 .input-group input:focus {
     border-color: #2563eb;
-    box-shadow: 0 0 12px rgba(37,99,235,0.6);
+    box-shadow: 0 0 10px rgba(37,99,235,0.7);
 }
 
-/* Floating Label */
-.input-group label {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    pointer-events: none;
-    transition: 0.3s;
-}
-
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
-    top: -8px;
-    left: 10px;
-    font-size: 11px;
-    background: #020617;
-    padding: 0 6px;
-    color: #2563eb;
-}
-
-/* Show Password */
-.toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 14px;
-    opacity: 0.7;
-}
-
-.toggle-password:hover {
-    opacity: 1;
-}
-
-/* Login Button */
+/* Button */
 .login-btn {
     width: 100%;
     padding: 12px;
@@ -141,89 +78,57 @@ body {
     background: linear-gradient(135deg, #2563eb, #22c55e);
     color: white;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
     box-shadow: 0 0 15px rgba(37,99,235,0.6);
 }
 
 .login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 25px rgba(37,99,235,0.9);
+    transform: scale(1.03);
+    box-shadow: 0 0 25px rgba(37,99,235,1);
 }
 
-/* Error Message */
-.error-msg {
-    margin-top: 12px;
-    font-size: 13px;
-    color: #f87171;
+/* Error */
+.error {
     text-align: center;
+    margin-top: 10px;
+    color: #f87171;
+    font-size: 13px;
     display: none;
-}
-
-/* Shake Animation */
-@keyframes shake {
-    0%,100% { transform: translateX(0); }
-    20%,60% { transform: translateX(-6px); }
-    40%,80% { transform: translateX(6px); }
-}
-
-.shake {
-    animation: shake 0.4s;
-}
-
-/* Responsive */
-@media (max-width: 420px) {
-    .login-card {
-        width: 90%;
-        padding: 25px;
-    }
 }
 </style>
 </head>
 <body>
 
-<div class="login-card" id="loginCard">
-    <div class="login-title">🔐 Admin Login</div>
-    <div class="login-subtitle">College Helpdesk System</div>
+<div class="login-box">
+    <h2>🔐 Admin Login</h2>
+    <p>College Helpdesk System</p>
 
     <form onsubmit="return login()">
         <div class="input-group">
-            <input type="text" id="username" placeholder=" " required>
-            <label>Username</label>
+            <input type="text" id="username" placeholder="Username" required>
         </div>
 
         <div class="input-group">
-            <input type="password" id="password" placeholder=" " required>
-            <label>Password</label>
-            <span class="toggle-password" onclick="togglePassword()">👁️</span>
+            <input type="password" id="password" placeholder="Password" required>
         </div>
 
-        <button class="login-btn" type="submit">Login</button>
-        <div class="error-msg" id="errorMsg">Invalid username or password</div>
+        <button class="login-btn">Login</button>
+        <div class="error" id="error">Invalid username or password</div>
     </form>
 </div>
 
 <script>
-function togglePassword() {
-    const pass = document.getElementById("password");
-    pass.type = pass.type === "password" ? "text" : "password";
-}
-
 function login() {
-    const user = document.getElementById("username").value;
-    const pass = document.getElementById("password").value;
-    const error = document.getElementById("errorMsg");
-    const card = document.getElementById("loginCard");
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
+    let err = document.getElementById("error");
 
-    // Demo logic (replace with backend later)
-    if (user === "admin" && pass === "admin123") {
-        alert("Login Successful!");
-        window.location.href = "/admin"; // your admin page
+    if (u === "admin" && p === "admin123") {
+        window.location.href = "/admin";
     } else {
-        error.style.display = "block";
-        card.classList.add("shake");
-        setTimeout(() => card.classList.remove("shake"), 400);
+        err.style.display = "block";
     }
     return false;
 }
