@@ -184,42 +184,6 @@ body {
     background: rgba(255,255,255,0.25);
     border-radius: 10px;
 }
-
-/* ================= MOBILE RESPONSIVE ================= */
-
-@media (max-width: 768px) {
-
-    .menu-btn {
-        display: block;
-    }
-
-    .sidebar {
-        position: fixed;
-        left: -260px;
-        top: 0;
-        height: 100vh;
-        z-index: 999;
-        transition: 0.3s;
-    }
-
-    .sidebar.show {
-        left: 0;
-    }
-
-    .chat-container {
-        width: 100%;
-    }
-
-    .message {
-        max-width: 80%;
-        font-size: 15px;
-    }
-
-    .chat-header {
-        padding-left: 50px;
-    }
-}
-
 /* ================= LIGHT MODE (GLASS) ================= */
 
 body.light {
@@ -301,5 +265,84 @@ body.light .menu-btn {
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
 }
 
+@media (max-width: 900px) {
+    .sidebar {
+        width: 200px;
+    }
+    .message {
+        max-width: 70%;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .menu-btn {
+        display: block;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        height: 100%;
+        z-index: 999;
+        transition: 0.3s;
+    }
+
+    .sidebar.show {
+        left: 0;
+    }
+
+    .chat-container {
+        width: 100%;
+    }
+
+    .chat-header {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .chat-header span {
+        font-size: 14px;
+    }
+
+    .admin-btn,
+    #themeToggle {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .message {
+        max-width: 85%;
+        font-size: 13px;
+    }
+
+    .chat-input input {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .chat-input button {
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 220px;
+    }
+
+    .chat-header span {
+        font-size: 13px;
+    }
+
+    .message {
+        max-width: 90%;
+    }
+
+    .chat-input input {
+        font-size: 12px;
+    }
+}
 
 
