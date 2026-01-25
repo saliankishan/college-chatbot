@@ -3,70 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Login - College Chatbot</title>
+<title>Admin Login</title>
 <link rel="stylesheet" href="/static/style.css">
-<style>
-
-/* Extra login animations */
-.login-box {
-    animation: fadeIn 0.8s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.login-title {
-    font-size: 22px;
-    margin-bottom: 5px;
-}
-
-.login-subtitle {
-    font-size: 13px;
-    opacity: 0.7;
-    margin-bottom: 15px;
-}
-
-.error-msg {
-    color: #ef4444;
-    font-size: 13px;
-    margin-bottom: 8px;
-}
-
-.back-btn {
-    margin-top: 10px;
-    display: inline-block;
-    font-size: 13px;
-    color: #38bdf8;
-    text-decoration: none;
-}
-.back-btn:hover {
-    text-decoration: underline;
-}
-</style>
 </head>
 <body>
 
 <div class="login-container">
-
 <div class="login-box">
-    <h2 class="login-title">🔐 Admin Login</h2>
-    <p class="login-subtitle">College Chatbot Control Panel</p>
 
-    {% if error %}
-        <div class="error-msg">{{ error }}</div>
-    {% endif %}
+<h2>🔐 Admin Login</h2>
+<p style="opacity:0.7;font-size:13px;">College Chatbot Control Panel</p>
 
-    <form method="post">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
+{% if error %}
+<p style="color:#ef4444;font-size:13px;">{{ error }}</p>
+{% endif %}
 
-    <a href="/" class="back-btn">⬅ Back to Chatbot</a>
+<form method="post">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+</form>
+
+<a href="/" style="color:#38bdf8;font-size:13px;display:block;margin-top:10px;">⬅ Back to Chatbot</a>
+
 </div>
-
 </div>
 
 </body>
