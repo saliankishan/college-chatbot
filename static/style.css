@@ -194,7 +194,23 @@ body {
     .menu-btn {
         display: block;
     }
+    .chat-header span {
+        font-size: 14px;
+    }
 
+    .admin-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    .chat-input input {
+        font-size: 13px;
+    }
+
+    .chat-input button {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
     .sidebar {
         position: fixed;
         left: -260px;
@@ -213,8 +229,8 @@ body {
     }
 
     .message {
-        max-width: 80%;
-        font-size: 15px;
+        max-width: 90%;
+        font-size: 14px;
     }
 
     .chat-header {
@@ -303,3 +319,4 @@ body.light .menu-btn {
     transform: scale(1.05);
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
 }
+
