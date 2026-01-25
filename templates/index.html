@@ -1,81 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>College Helpdesk Chatbot</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Helpdesk Chatbot</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<button class="menu-btn" onclick="toggleSidebar()">☰</button>
-
 <div class="app-container">
 
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
-    <h2>🎓 College Chatbot</h2>
-    <p>AI Helpdesk System</p>
-    <ul>
-        <li>📌 Admission</li>
-        <li>💰 Fees</li>
-        <li>📅 Timetable</li>
-        <li>📞 Contact</li>
-    </ul>
-</div>
+    <!-- Mobile Menu Button -->
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
-<!-- Chat -->
-<div class="chat-container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2>🎓 College ChatBot</h2>
+        <p>AI Helpdesk System</p>
+        <hr>
+        <ul>
+            <li>📌 Admission Info</li>
+            <li>💰 Fees Details</li>
+            <li>📅 Timetable</li>
+            <li>📞 Contact Support</li>
+        </ul>
+    </div>
 
-    <div class="chat-header">
-        <span>College Helpdesk AI 🤖</span>
-        <div class="header-actions">
-            <button class="admin-btn" onclick="location.href='/admin'">Admin</button>
-            <button class="theme-btn" id="themeToggle">🌙</button>
+    <!-- Chat Section -->
+    <div class="chat-container">
+
+        <div class="chat-header">
+            <span>College Helpdesk Chatbot</span>
+            <button onclick="window.location.href='/admin'" class="admin-btn">Admin Panel</button>
+            <button id="themeToggle">🌙</button>
         </div>
+
+        <div id="chat" class="chat-box"></div>
+
+        <div class="chat-input">
+            <input type="text" id="msg" placeholder="Ask your question..." autofocus>
+            <button onclick="send()">➤</button>
+            <button onclick="window.speechSynthesis.cancel()">🔇</button>
+        </div>
+
     </div>
 
-    <div id="chat" class="chat-box"></div>
-
-    <div class="chat-input">
-        <input type="text" id="msg" placeholder="Ask your question...">
-        <button onclick="send()">➤</button>
-    </div>
-
-</div>
 </div>
 
 <script>
-function toggleSidebar(){
+function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("show");
 }
 
-function send(){
-    let input=document.getElementById("msg");
-    let message=input.value.trim();
-    if(!message) return;
+function speak(text) {
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(speech);
+}
 
-    addMessage("user",message);
+function send() {
+    let input = document.getElementById("msg");
+    let message = input.value.trim();
+    if (message === "") return;
 
-    fetch("/chat",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({message})
+    addMessage("user", message);
+
+    fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: message})
     })
-    .then(res=>res.json())
-    .then(data=>addMessage("bot",data.reply));
+    .then(res => res.json())
+    .then(data => {
+        addMessage("bot", data.reply);
+        speak(data.reply);
+    });
 
-    input.value="";
+    input.value = "";
 }
 
-function addMessage(type,text){
-    let chat=document.getElementById("chat");
-    let div=document.createElement("div");
-    div.className="message "+type;
-    div.innerText=text;
+function addMessage(sender, text) {
+    let chat = document.getElementById("chat");
+    let div = document.createElement("div");
+    div.className = "message " + sender;
+    div.innerText = text;
     chat.appendChild(div);
-    chat.scrollTop=chat.scrollHeight;
+    chat.scrollTop = chat.scrollHeight;
 }
+
+document.getElementById("msg").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        send();
+    }
+});
+
+const toggleBtn = document.getElementById("themeToggle");
+const body = document.body;
+
+if (localStorage.getItem("theme") === "light") {
+    body.classList.add("light");
+    toggleBtn.textContent = "☀️";
+}
+
+toggleBtn.onclick = () => {
+    body.classList.toggle("light");
+    const isLight = body.classList.contains("light");
+    toggleBtn.textContent = isLight ? "☀️" : "🌙";
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+};
 </script>
 
 </body>
