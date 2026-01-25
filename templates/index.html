@@ -10,6 +10,9 @@
 
 <div class="app-container">
 
+    <!-- Mobile Menu Button -->
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <h2>🎓 College ChatBot</h2>
@@ -28,11 +31,8 @@
 
         <div class="chat-header">
             <span>College Helpdesk Chatbot</span>
-            <div class="header-buttons">
-                <button class="admin-btn" onclick="window.location.href='/admin'">Admin Panel</button>
-                <button id="themeToggle">🌙</button>
-                <button onclick="toggleVoice()">🎤</button>
-            </div>
+            <button onclick="window.location.href='/admin'" class="admin-btn">Admin Panel</button>
+            <button id="themeToggle">🌙</button>
         </div>
 
         <div id="chat" class="chat-box"></div>
@@ -40,6 +40,7 @@
         <div class="chat-input">
             <input type="text" id="msg" placeholder="Ask your question..." autofocus>
             <button onclick="send()">➤</button>
+            <button onclick="window.speechSynthesis.cancel()">🔇</button>
         </div>
 
     </div>
@@ -47,42 +48,34 @@
 </div>
 
 <script>
-let voiceEnabled = true;
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
 
-// Voice Reply
 function speak(text) {
-    if (!voiceEnabled) return;
-    if (!('speechSynthesis' in window)) return;
-
-    let speech = new SpeechSynthesisUtterance(text);
-    speech.lang = "en-IN";
-    speech.rate = 1;
-    speech.pitch = 1;
-
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US";
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(speech);
 }
 
-function toggleVoice() {
-    voiceEnabled = !voiceEnabled;
-    alert("Voice " + (voiceEnabled ? "ON" : "OFF"));
-}
-
-// Send Message (Demo bot reply)
 function send() {
     let input = document.getElementById("msg");
     let message = input.value.trim();
-    if (!message) return;
+    if (message === "") return;
 
     addMessage("user", message);
 
-    // Demo bot reply (replace with backend later)
-    let reply = "Thanks for your question. Our team will help you soon.";
-
-    setTimeout(() => {
-        addMessage("bot", reply);
-        speak(reply);
-    }, 500);
+    fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: message})
+    })
+    .then(res => res.json())
+    .then(data => {
+        addMessage("bot", data.reply);
+        speak(data.reply);
+    });
 
     input.value = "";
 }
@@ -96,12 +89,13 @@ function addMessage(sender, text) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-// Enter key support
 document.getElementById("msg").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") send();
+    if (e.key === "Enter") {
+        e.preventDefault();
+        send();
+    }
 });
 
-// Theme Toggle
 const toggleBtn = document.getElementById("themeToggle");
 const body = document.body;
 
@@ -120,4 +114,3 @@ toggleBtn.onclick = () => {
 
 </body>
 </html>
-
