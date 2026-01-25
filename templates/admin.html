@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - College Chatbot</title>
+
+<style>
+* { box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+body {
+    margin: 0;
+    background: radial-gradient(circle at top left, #0f172a, #020617);
+    color: white;
+}
+
+/* Layout */
+.container { display: flex; height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(255,255,255,0.15);
+}
+.sidebar h2 { color: #38bdf8; }
+.sidebar a {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    background: rgba(255,255,255,0.05);
+}
+.sidebar a:hover { background: linear-gradient(135deg,#2563eb,#a855f7); }
+
+/* Main */
+.main { flex: 1; padding: 20px; overflow-y: auto; }
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+}
+.btn-back { background: linear-gradient(135deg,#22c55e,#16a34a); }
+.btn-logout { background: linear-gradient(135deg,#ef4444,#dc2626); }
+
+/* Cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+.card {
+    padding: 15px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.card p { font-size: 22px; color: #38bdf8; }
+
+/* Form */
+.form-box {
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+    margin-bottom: 20px;
+}
+.form-box input, .form-box textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+.form-box button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg,#2563eb,#a855f7);
+    color: white;
+    cursor: pointer;
+}
+
+/* Search */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.search-box input, .search-box select {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+/* Table */
+.table-box {
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+th { color: #38bdf8; }
+
+.edit-btn {
+    background: linear-gradient(135deg,#facc15,#eab308);
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.delete-btn {
+    background: linear-gradient(135deg,#ef4444,#dc2626);
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Modal */
+#editModal {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+}
+.modal-box {
+    width: 420px;
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="sidebar">
+    <h2>👤 Admin Panel</h2>
+    <a href="/">🏠 Chatbot</a>
+    <a href="#add">➕ Add Intent</a>
+    <a href="#list">📋 Manage Intents</a>
+    <a href="/logout">🚪 Logout</a>
+</div>
+
+<div class="main">
+
+<div class="header">
+    <h1>College Chatbot Dashboard</h1>
+    <div>
+        <a href="/" class="btn btn-back">⬅ Chatbot</a>
+        <a href="/logout" class="btn btn-logout">Logout</a>
+    </div>
+</div>
+
+<!-- Analytics -->
+<div class="cards">
+    <div class="card"><h4>Total Intents</h4><p>{{ total_intents }}</p></div>
+    <div class="card"><h4>Total Patterns</h4><p>{{ total_patterns }}</p></div>
+    <div class="card"><h4>Total Responses</h4><p>{{ total_responses }}</p></div>
+    <div class="card"><h4>Total Chats</h4><p>{{ total_chats }}</p></div>
+</div>
+
+<!-- Add Intent -->
+<div class="form-box" id="add">
+    <h3>➕ Add New Intent</h3>
+    <form method="post">
+        <input type="hidden" name="action" value="add">
+        <input type="text" name="tag" placeholder="Intent Tag" required>
+        <textarea name="patterns" placeholder="Patterns (one per line)" required></textarea>
+        <textarea name="responses" placeholder="Responses (one per line)" required></textarea>
+        <button type="submit">Add Intent</button>
+    </form>
+</div>
+
+<!-- Search -->
+<div class="search-box">
+    <input type="text" id="searchBox" placeholder="🔍 Search intents...">
+    <select id="filterSelect">
+        <option value="">All Tags</option>
+        {% for intent in intents %}
+        <option value="{{ intent[1] }}">{{ intent[1] }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- Intent Table -->
+<div class="table-box" id="list">
+<table id="intentTable">
+<tr>
+    <th>Tag</th>
+    <th>Patterns</th>
+    <th>Responses</th>
+    <th>Action</th>
+</tr>
+
+{% for intent in intents %}
+<tr>
+    <td>{{ intent[1] }}</td>
+    <td style="white-space: pre-line;">{{ intent[2] }}</td>
+    <td style="white-space: pre-line;">{{ intent[3] }}</td>
+    <td>
+        <button class="edit-btn" onclick="openEditModal('{{ intent[0] }}','{{ intent[1] }}',`{{ intent[2] }}`,`{{ intent[3] }}`)">Edit</button>
+
+        <form method="post" style="display:inline;">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="intent_id" value="{{ intent[0] }}">
+            <button class="delete-btn">Delete</button>
+        </form>
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+</div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal">
+<div class="modal-box">
+<h3> Edit Intent</h3>
+
+<form method="post">
+<input type="hidden" name="action" value="edit">
+<input type="hidden" name="intent_id" id="editIntentId">
+
+<input type="text" name="tag" id="editTag" required>
+<textarea name="patterns" id="editPatterns" required></textarea>
+<textarea name="responses" id="editResponses" required></textarea>
+
+<div style="text-align:right;">
+<button type="button" onclick="closeEditModal()">Cancel</button>
+<button type="submit">Update</button>
+</div>
+</form>
+</div>
+</div>
+
+<script>
+function openEditModal(id, tag, patterns, responses) {
+    document.getElementById("editIntentId").value = id;
+    document.getElementById("editTag").value = tag;
+    document.getElementById("editPatterns").value = patterns;
+    document.getElementById("editResponses").value = responses;
+    document.getElementById("editModal").style.display = "flex";
+}
+function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+}
+
+const searchBox = document.getElementById("searchBox");
+const filterSelect = document.getElementById("filterSelect");
+const table = document.getElementById("intentTable");
+const rows = table.getElementsByTagName("tr");
+
+function filterIntents() {
+    const searchText = searchBox.value.toLowerCase();
+    const filterTag = filterSelect.value.toLowerCase();
+
+    for (let i = 1; i < rows.length; i++) {
+        const tag = rows[i].cells[0].innerText.toLowerCase();
+        const patterns = rows[i].cells[1].innerText.toLowerCase();
+        const responses = rows[i].cells[2].innerText.toLowerCase();
+
+        const matchesSearch = tag.includes(searchText) || patterns.includes(searchText) || responses.includes(searchText);
+        const matchesFilter = filterTag === "" || tag === filterTag;
+
+        rows[i].style.display = (matchesSearch && matchesFilter) ? "" : "none";
+    }
+}
+searchBox.addEventListener("keyup", filterIntents);
+filterSelect.addEventListener("change", filterIntents);
+</script>
+
+</body>
+</html>
