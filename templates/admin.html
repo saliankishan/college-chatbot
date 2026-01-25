@@ -3,127 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel - College Chatbot</title>
+<title>Admin Dashboard - College Chatbot</title>
+<link rel="stylesheet" href="/static/style.css">
 
 <style>
-* { box-sizing: border-box; font-family: "Poppins", sans-serif; }
 
-body {
-    margin: 0;
-    background: radial-gradient(circle at top left, #0f172a, #020617);
-    color: white;
-}
-
-/* Layout */
-.container { display: flex; min-height: 100vh; }
-
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    border-right: 1px solid rgba(255,255,255,0.15);
-    transition: 0.3s;
-}
-
-.sidebar h2 { color: #38bdf8; }
-
-.sidebar a {
-    display: block;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 10px;
-    text-decoration: none;
-    color: white;
-    background: rgba(255,255,255,0.05);
-}
-.sidebar a:hover { background: linear-gradient(135deg,#2563eb,#a855f7); }
-
-/* Mobile Sidebar Button */
-.menu-btn {
-    display: none;
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 1000;
-    background: linear-gradient(135deg,#2563eb,#a855f7);
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 18px;
-}
-
-/* Main */
-.main { flex: 1; padding: 20px; overflow-x: hidden; }
-
-.header {
+/* Extra admin UI styles */
+.dashboard-header {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 15px;
 }
 
-.btn {
-    padding: 8px 14px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    color: white;
-}
-.btn-back { background: linear-gradient(135deg,#22c55e,#16a34a); }
-.btn-logout { background: linear-gradient(135deg,#ef4444,#dc2626); }
-
-/* Cards */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin: 15px 0;
-}
-.card {
-    padding: 14px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-}
-.card p { font-size: 20px; color: #38bdf8; }
-
-/* Form */
-.form-box {
-    padding: 14px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.08);
-    margin-bottom: 16px;
-}
-.form-box input, .form-box textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
-    color: white;
-}
-.form-box button {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: none;
-    background: linear-gradient(135deg,#2563eb,#a855f7);
-    color: white;
+.dashboard-header h1 {
+    font-size: 22px;
+    color: #38bdf8;
 }
 
-/* Search */
+.dashboard-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg,#ef4444,#dc2626);
+}
+
+.btn-success {
+    background: linear-gradient(135deg,#22c55e,#16a34a);
+}
+
+.form-box textarea {
+    min-height: 80px;
+}
+
 .search-box {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 10px;
 }
-.search-box input, .search-box select {
+
+.search-box input, 
+.search-box select {
     flex: 1;
     padding: 10px;
     border-radius: 8px;
@@ -132,37 +57,21 @@ body {
     color: white;
 }
 
-/* Table Responsive */
-.table-box {
-    padding: 14px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.08);
-    overflow-x: auto;   /* important for mobile */
+.action-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
 }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    min-width: 700px; /* forces horizontal scroll on mobile */
-}
-th, td {
-    padding: 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-th { color: #38bdf8; }
 
 .edit-btn {
     background: linear-gradient(135deg,#facc15,#eab308);
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
+    color: black;
 }
+
 .delete-btn {
     background: linear-gradient(135deg,#ef4444,#dc2626);
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
     color: white;
 }
 
@@ -176,7 +85,9 @@ th { color: #38bdf8; }
     backdrop-filter: blur(4px);
     justify-content: center;
     align-items: center;
+    z-index: 9999;
 }
+
 .modal-box {
     width: 90%;
     max-width: 420px;
@@ -186,69 +97,38 @@ th { color: #38bdf8; }
     border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* 📱 MOBILE RESPONSIVE */
-@media (max-width: 768px) {
-
-    .menu-btn {
-        display: block;
-    }
-
-    .sidebar {
-        position: fixed;
-        left: -260px;
-        top: 0;
-        height: 100%;
-        z-index: 999;
-    }
-
-    .sidebar.show {
-        left: 0;
-    }
-
-    .main {
-        padding: 15px;
-        padding-top: 50px;
-    }
-
-    .header h1 {
-        font-size: 20px;
-    }
-
-    .btn {
-        font-size: 13px;
-        padding: 6px 10px;
-    }
-
-    .card p {
-        font-size: 18px;
-    }
-}
 </style>
 </head>
 <body>
 
 <button class="menu-btn" onclick="toggleAdminSidebar()">☰</button>
 
-<div class="container">
+<div class="app">
 
+<!-- Sidebar -->
 <div class="sidebar" id="adminSidebar">
     <h2>👤 Admin Panel</h2>
-    <a href="/">🏠 Chatbot</a>
-    <a href="#add">➕ Add Intent</a>
-    <a href="#list">📋 Manage Intents</a>
-    <a href="/logout">🚪 Logout</a>
+    <p>Chatbot Management</p>
+    <ul>
+        <li><a href="/" style="color:white;text-decoration:none;">🏠 Chatbot</a></li>
+        <li><a href="#add" style="color:white;text-decoration:none;">➕ Add Intent</a></li>
+        <li><a href="#list" style="color:white;text-decoration:none;">📋 Manage Intents</a></li>
+        <li><a href="/logout" style="color:white;text-decoration:none;">🚪 Logout</a></li>
+    </ul>
 </div>
 
-<div class="main">
+<!-- Main Dashboard -->
+<div class="dashboard">
 
-<div class="header">
-    <h1>College Chatbot Dashboard</h1>
-    <div>
-        <a href="/" class="btn btn-back">⬅ Chatbot</a>
-        <a href="/logout" class="btn btn-logout">Logout</a>
+<div class="dashboard-header">
+    <h1>📊 College Chatbot Dashboard</h1>
+    <div class="dashboard-actions">
+        <a href="/" class="btn btn-success">⬅ Chatbot</a>
+        <a href="/logout" class="btn btn-danger">Logout</a>
     </div>
 </div>
 
+<!-- Analytics Cards -->
 <div class="cards">
     <div class="card"><h4>Total Intents</h4><p>{{ total_intents }}</p></div>
     <div class="card"><h4>Total Patterns</h4><p>{{ total_patterns }}</p></div>
@@ -256,6 +136,7 @@ th { color: #38bdf8; }
     <div class="card"><h4>Total Chats</h4><p>{{ total_chats }}</p></div>
 </div>
 
+<!-- Add Intent -->
 <div class="form-box" id="add">
     <h3>➕ Add New Intent</h3>
     <form method="post">
@@ -267,6 +148,7 @@ th { color: #38bdf8; }
     </form>
 </div>
 
+<!-- Search & Filter -->
 <div class="search-box">
     <input type="text" id="searchBox" placeholder="🔍 Search intents...">
     <select id="filterSelect">
@@ -277,6 +159,7 @@ th { color: #38bdf8; }
     </select>
 </div>
 
+<!-- Intent Table -->
 <div class="table-box" id="list">
 <table id="intentTable">
 <tr>
@@ -292,11 +175,15 @@ th { color: #38bdf8; }
     <td style="white-space: pre-line;">{{ intent[2] }}</td>
     <td style="white-space: pre-line;">{{ intent[3] }}</td>
     <td>
-        <button class="edit-btn" onclick="openEditModal('{{ intent[0] }}','{{ intent[1] }}',`{{ intent[2] }}`,`{{ intent[3] }}`)">Edit</button>
+        <button class="action-btn edit-btn"
+        onclick="openEditModal('{{ intent[0] }}','{{ intent[1] }}',`{{ intent[2] }}`,`{{ intent[3] }}`)">
+        Edit
+        </button>
+
         <form method="post" style="display:inline;">
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="intent_id" value="{{ intent[0] }}">
-            <button class="delete-btn">Delete</button>
+            <button class="action-btn delete-btn">Delete</button>
         </form>
     </td>
 </tr>
@@ -307,18 +194,22 @@ th { color: #38bdf8; }
 </div>
 </div>
 
+<!-- Edit Modal -->
 <div id="editModal">
 <div class="modal-box">
-<h3>Edit Intent</h3>
+<h3>✏️ Edit Intent</h3>
+
 <form method="post">
 <input type="hidden" name="action" value="edit">
 <input type="hidden" name="intent_id" id="editIntentId">
+
 <input type="text" name="tag" id="editTag" required>
 <textarea name="patterns" id="editPatterns" required></textarea>
 <textarea name="responses" id="editResponses" required></textarea>
-<div style="text-align:right;">
-<button type="button" onclick="closeEditModal()">Cancel</button>
-<button type="submit">Update</button>
+
+<div style="text-align:right;margin-top:10px;">
+<button type="button" class="btn btn-danger" onclick="closeEditModal()">Cancel</button>
+<button type="submit" class="btn">Update</button>
 </div>
 </form>
 </div>
@@ -328,6 +219,7 @@ th { color: #38bdf8; }
 function toggleAdminSidebar() {
     document.getElementById("adminSidebar").classList.toggle("show");
 }
+
 function openEditModal(id, tag, patterns, responses) {
     document.getElementById("editIntentId").value = id;
     document.getElementById("editTag").value = tag;
@@ -335,9 +227,34 @@ function openEditModal(id, tag, patterns, responses) {
     document.getElementById("editResponses").value = responses;
     document.getElementById("editModal").style.display = "flex";
 }
+
 function closeEditModal() {
     document.getElementById("editModal").style.display = "none";
 }
+
+// Search & Filter
+const searchBox = document.getElementById("searchBox");
+const filterSelect = document.getElementById("filterSelect");
+const table = document.getElementById("intentTable");
+const rows = table.getElementsByTagName("tr");
+
+function filterIntents() {
+    const searchText = searchBox.value.toLowerCase();
+    const filterTag = filterSelect.value.toLowerCase();
+
+    for (let i = 1; i < rows.length; i++) {
+        const tag = rows[i].cells[0].innerText.toLowerCase();
+        const patterns = rows[i].cells[1].innerText.toLowerCase();
+        const responses = rows[i].cells[2].innerText.toLowerCase();
+
+        const matchesSearch = tag.includes(searchText) || patterns.includes(searchText) || responses.includes(searchText);
+        const matchesFilter = filterTag === "" || tag === filterTag;
+
+        rows[i].style.display = (matchesSearch && matchesFilter) ? "" : "none";
+    }
+}
+searchBox.addEventListener("keyup", filterIntents);
+filterSelect.addEventListener("change", filterIntents);
 </script>
 
 </body>
