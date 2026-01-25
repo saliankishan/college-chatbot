@@ -2,10 +2,10 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Segoe UI", sans-serif;
+    font-family: Arial, sans-serif;
 }
 
-/* Dark Theme */
+/* Dark Theme Default */
 body {
     background: #0f172a;
     color: white;
@@ -15,12 +15,28 @@ body {
 /* Light Theme */
 body.light {
     background: #f8fafc;
-    color: #020617;
+    color: black;
 }
 
 .app-container {
     display: flex;
     height: 100vh;
+}
+
+/* Mobile Menu Button */
+.menu-btn {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 1000;
 }
 
 /* Sidebar */
@@ -66,9 +82,9 @@ body.light .sidebar {
 /* Header */
 .chat-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px 18px;
+    gap: 10px;
+    padding: 12px 15px;
     background: #020617;
     border-bottom: 1px solid #1e293b;
 }
@@ -78,17 +94,33 @@ body.light .chat-header {
     border-bottom: 1px solid #cbd5e1;
 }
 
-.header-buttons button {
-    margin-left: 8px;
-    padding: 6px 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background: #1e293b;
-    color: white;
+.chat-header span {
+    font-weight: bold;
+    flex: 1;
 }
 
-body.light .header-buttons button {
+/* Admin Button (simple) */
+.admin-btn {
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* Theme Button */
+#themeToggle {
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: none;
+    background: #1e293b;
+    color: white;
+    cursor: pointer;
+}
+
+body.light #themeToggle {
     background: #cbd5e1;
     color: black;
 }
@@ -110,7 +142,7 @@ body.light .chat-box {
     max-width: 60%;
     padding: 10px 14px;
     margin: 8px 0;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 14px;
     line-height: 1.4;
 }
@@ -155,7 +187,7 @@ body.light .chat-input {
 
 .chat-input button {
     margin-left: 8px;
-    padding: 8px 14px;
+    padding: 8px 12px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
@@ -163,44 +195,27 @@ body.light .chat-input {
     color: white;
 }
 
-/* Admin Button - Industry Style */
-.admin-btn {
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid #2563eb;
-    background: transparent;
-    color: #2563eb;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
+/* Sidebar Toggle (Mobile) */
+.sidebar.show {
+    left: 0;
 }
 
-.admin-btn:hover {
-    background: #2563eb;
-    color: white;
-    transform: scale(1.05);
-}
-
-/* Light Mode Admin Button */
-body.light .admin-btn {
-    border: 1px solid #1d4ed8;
-    color: #1d4ed8;
-}
-
-body.light .admin-btn:hover {
-    background: #1d4ed8;
-    color: white;
-}
-
-
-/* Responsive (Mobile) */
+/* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {
-        display: none;
+        position: fixed;
+        left: -260px;
+        top: 0;
+        height: 100%;
+        transition: 0.3s;
+        z-index: 999;
     }
+
+    .menu-btn {
+        display: block;
+    }
+
     .message {
         max-width: 80%;
     }
 }
-
