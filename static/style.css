@@ -285,21 +285,20 @@ body.light .menu-btn {
 }
 
 .admin-btn {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    border: none;
+    color: white;
     padding: 6px 12px;
-    border-radius: 20px;
-    border: 1px solid #1454e0;
-    background: transparent;
-    color: #1454e0;
+    border-radius: 8px;
     font-size: 13px;
     cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+    margin-right: 8px;
+    transition: 0.2s;
 }
 
 .admin-btn:hover {
-    background: #1454e0;
-    color: white;
-    box-shadow: 0 0 20px rgba(37, 99, 235, 0.9);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
 }
 
 
