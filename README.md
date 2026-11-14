@@ -1,6 +1,6 @@
 # 🎓 College Helpdesk Chatbot
 
-A smart AI-based chatbot for college students to get information about admissions, courses, fees, timetable, and more.
+A smart chatbot for college students to get information about admissions, courses, fees, timetable, and more.
 
 ## Features
 - AI-based chatbot (NLP)
